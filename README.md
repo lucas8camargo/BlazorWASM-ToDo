@@ -7,7 +7,7 @@ Este projeto demonstra como uma aplicação .NET (8.0) pode ser executada direta
 ## Demonstração Online
 https://lucas8camargo.github.io/BlazorToDoWASM/
 
-Esse é o código-fonte do projeto sem as modificações necessárias para utilizar o GitHub Pages. Para o código modificado que está online acesse o link abaixo:
+Esse é o código-fonte do projeto sem as modificações necessárias para utilizar o GitHub Pages. Para o código modificado que está online, acesse o link:
 https://github.com/lucas8camargo/BlazorToDoWASM
 
 ## Como utilizar o GitHub Pages em um projeto Blazor WASM
