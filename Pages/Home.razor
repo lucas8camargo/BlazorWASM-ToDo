@@ -1,0 +1,92 @@
+﻿@page "/"
+@using BlazorToDoWASM.Services
+@using BlazorToDoWASM.Models
+@inject ToDoService TodoService
+
+<div class="todo-container">
+    <div class="todo-header">
+        <h1>Lista de Tarefas</h1>
+        <p class="subtitle">Um To-Do list feito com Blazor Web Assembly</p>
+    </div>
+
+    <div class="add-task-container">
+        <input @bind="_newItemTitle" placeholder="O que você precisa fazer?" class="task-input" />
+        <button @onclick="AddItem" class="btn-add">
+            <span class="icon">+</span>
+            Adicionar
+        </button>
+    </div>
+
+    <div class="tasks-container @(_todoItems.Count == 0 ? "empty" : "")">
+        @if (_todoItems.Count == 0)
+        {
+            <div class="empty-state">
+                <div class="empty-icon">📝</div>
+                <p>Sua lista está vazia</p>
+                <p class="empty-subtitle">Adicione suas primeiras tarefas acima</p>
+            </div>
+        }
+        else
+        {
+            <ul class="task-list">
+                @foreach (var item in _todoItems)
+                {
+                    <li class="task-item @(item.IsDone ? "completed" : "")">
+                        <div class="task-checkbox">
+                            <input type="checkbox" id="task-@item.Id" @bind="item.IsDone" @bind:after="@(() => UpdateItem(item))" />
+                            <label for="task-@item.Id"></label>
+                        </div>
+                        <input @bind="item.Title" @bind:after="@(() => UpdateItem(item))" class="task-title @(item.IsDone ? "completed-text" : "")" />
+                        <button @onclick="() => DeleteItem(item.Id)" class="btn-delete">
+                            <span class="delete-icon">×</span>
+                        </button>
+                    </li>
+                }
+            </ul>
+            
+            <div class="task-summary">
+                <p>@GetCompletedCount() de @_todoItems.Count completas</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private string _newItemTitle = "";
+    private List<ToDoItem> _todoItems = new List<ToDoItem>();
+
+    protected override void OnInitialized()
+    {
+        // Carrega os itens iniciais
+        _todoItems = TodoService.GetAll().ToList();
+    }
+
+    private void AddItem()
+    {
+        if (!string.IsNullOrWhiteSpace(_newItemTitle))
+        {
+            TodoService.Add(_newItemTitle);
+            _todoItems = TodoService.GetAll().ToList();
+            _newItemTitle = "";
+            StateHasChanged();
+        }
+    }
+
+    private void UpdateItem(ToDoItem item)
+    {
+        TodoService.Update(item);
+        StateHasChanged();
+    }
+
+    private void DeleteItem(int id)
+    {
+        TodoService.Delete(id);
+        _todoItems = TodoService.GetAll().ToList();
+        StateHasChanged();
+    }
+    
+    private int GetCompletedCount()
+    {
+        return _todoItems.Count(item => item.IsDone);
+    }
+}
